@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LisoStream - Multi-Peer Live Streaming & Communication</title>
+    
+    <!-- Favicon / Web Title Logo -->
+    <link rel="icon" href="logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="logo.png">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -118,8 +123,9 @@
     <!-- Top Navigation Bar -->
     <header class="w-full glass-panel sticky top-0 z-40 border-b border-white/10 px-3 sm:px-6 py-2.5 sm:py-3.5 flex items-center justify-between shadow-lg">
         <div class="flex items-center space-x-2.5 sm:space-x-3 cursor-pointer" onclick="resetToLobby()">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-purple-500 flex items-center justify-center shadow-lg shadow-brand-500/30">
-                <i data-lucide="video" class="w-4 h-4 sm:w-5 sm:h-5 text-white"></i>
+            <!-- Top-Left Logo Element -->
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-purple-500 flex items-center justify-center shadow-lg shadow-brand-500/30 overflow-hidden border border-white/20">
+                <img src="logo.png" alt="LisoStream Logo" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<i data-lucide=\'video\' class=\'w-4 h-4 sm:w-5 sm:h-5 text-white\'></i>'; lucide.createIcons();" />
             </div>
             <div>
                 <span class="text-lg sm:text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-purple-400">LisoStream</span>
@@ -361,8 +367,8 @@
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
             <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 rounded-xl bg-brand-500/20 flex items-center justify-center text-brand-400">
-                    <i data-lucide="video" class="w-5 h-5"></i>
+                <div class="w-10 h-10 rounded-xl bg-brand-500/20 flex items-center justify-center text-brand-400 overflow-hidden">
+                    <img src="logo.png" alt="Logo" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<i data-lucide=\'video\' class=\'w-5 h-5\'></i>'; lucide.createIcons();" />
                 </div>
                 <div>
                     <h3 class="text-base sm:text-lg font-bold text-white">LisoStream Group Stream</h3>
