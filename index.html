@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LisoStream - Live Peer-to-Peer Streaming & Communication</title>
-    <!-- Tailwind CSS for utility styling -->
+    <title>LisoStream - Multi-Peer Live Streaming & Communication</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- PeerJS for WebRTC connectivity -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <!-- Canvas Confetti for fun call events -->
+    <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <script>
@@ -27,21 +27,6 @@
                             glow: '#8b5cf6'
                         },
                         darkBg: '#0b0f19',
-                        darkCard: 'rgba(17, 24, 39, 0.75)',
-                    },
-                    animation: {
-                        'pulse-glow': 'pulseGlow 2s infinite',
-                        'float': 'float 4s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        pulseGlow: {
-                            '0%, 100%': { boxShadow: '0 0 15px rgba(139, 92, 246, 0.4)' },
-                            '50%': { boxShadow: '0 0 30px rgba(139, 92, 246, 0.8)' },
-                        },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-8px)' },
-                        }
                     }
                 }
             }
@@ -64,7 +49,7 @@
 
         /* Glassmorphism visual elements */
         .glass-panel {
-            background: rgba(17, 24, 39, 0.75);
+            background: rgba(17, 24, 39, 0.8);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -76,7 +61,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Custom Scrollbars */
+        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 4px;
             height: 4px;
@@ -89,7 +74,6 @@
             border-radius: 9999px;
         }
 
-        /* Video element mirroring */
         .mirror-video {
             transform: scaleX(-1);
         }
@@ -119,7 +103,6 @@
             filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
         }
 
-        /* 4-Digit Slot input styling */
         .digit-slot {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -130,7 +113,7 @@
         }
     </style>
 </head>
-<body class="bg-darkBg text-slate-100 min-h-screen flex flex-col overflow-x-hidden antialiased selection:bg-brand-500 selection:text-white">
+<body class="bg-darkBg text-slate-100 min-h-screen flex flex-col overflow-x-hidden antialiased">
 
     <!-- Top Navigation Bar -->
     <header class="w-full glass-panel sticky top-0 z-40 border-b border-white/10 px-3 sm:px-6 py-2.5 sm:py-3.5 flex items-center justify-between shadow-lg">
@@ -140,15 +123,15 @@
             </div>
             <div>
                 <span class="text-lg sm:text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-purple-400">LisoStream</span>
-                <span class="hidden sm:inline-block ml-2 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30">Live P2P</span>
+                <span class="hidden sm:inline-block ml-2 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30">Max 50 Users</span>
             </div>
         </div>
 
-        <!-- Room & Peer Status Indicator Header -->
+        <!-- Room Badge & Participant Count -->
         <div id="navRoomBadge" class="hidden flex items-center gap-2 sm:gap-3 px-3 py-1 sm:py-1.5 rounded-full glass-card border border-white/10">
             <div class="flex items-center gap-1.5">
-                <span id="statusDot" class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-amber-400 animate-ping"></span>
-                <span id="statusText" class="text-[11px] sm:text-xs font-medium text-amber-300">Waiting...</span>
+                <span id="statusDot" class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-400"></span>
+                <span id="participantCount" class="text-[11px] sm:text-xs font-semibold text-emerald-300">1 / 50 Connected</span>
             </div>
             <div class="h-3 w-[1px] bg-white/20"></div>
             <div class="flex items-center gap-1">
@@ -163,8 +146,8 @@
         <!-- Right Side Controls & Demo Toggle -->
         <div class="flex items-center gap-1.5 sm:gap-2">
             <button onclick="toggleModeSimulation()" id="demoToggleBtn" class="hidden sm:flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all">
-                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i>
-                <span id="demoToggleText">Simulate Peer</span>
+                <i data-lucide="users" class="w-3.5 h-3.5 text-purple-400"></i>
+                <span id="demoToggleText">Simulate Group Join</span>
             </button>
             <button onclick="showInfoModal()" class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
                 <i data-lucide="help-circle" class="w-5 h-5"></i>
@@ -175,60 +158,56 @@
     <!-- Main Content Area -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 flex flex-col justify-center relative z-10">
 
-        <!-- LOBBY SCREEN (Initial View) -->
+        <!-- LOBBY SCREEN -->
         <section id="lobbyScreen" class="w-full max-w-4xl mx-auto my-auto flex flex-col items-center justify-center py-4 sm:py-6">
             
-            <!-- Hero Badge -->
             <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-300 text-xs font-medium mb-4 sm:mb-6 animate-pulse">
-                <i data-lucide="shield-check" class="w-4 h-4 text-brand-400"></i>
-                <span>Direct P2P Encrypted Session</span>
+                <i data-lucide="users" class="w-4 h-4 text-brand-400"></i>
+                <span>Multi-User Stream Room (Up to 50 Participants)</span>
             </div>
 
-            <!-- Main Heading -->
             <h1 class="text-2xl sm:text-5xl lg:text-6xl font-black text-center tracking-tight text-white mb-3 sm:mb-4 leading-tight">
-                Connect Instantaneously With <br class="hidden sm:block"/>
-                <span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">4-Digit Auto Room Codes</span>
+                Broadcast & Stream Live <br class="hidden sm:block"/>
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">With One 4-Digit Code</span>
             </h1>
 
             <p class="text-slate-400 text-center max-w-xl text-xs sm:text-base mb-6 sm:mb-10 leading-relaxed px-2">
-                Generate or enter a 4-digit PIN code (1 to 4 digits) to connect two individuals instantly in a high-definition live stream session.
+                Generate or enter a 4-digit PIN code. Up to 50 participants can join the exact same stream session with host controls anchored at the corner.
             </p>
 
-            <!-- Interactive Action Panel -->
             <div class="w-full max-w-2xl grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 px-1">
                 
-                <!-- Card 1: Auto-Generate Room Code -->
+                <!-- Host Room Creation -->
                 <div class="glass-panel p-5 sm:p-8 rounded-2xl sm:rounded-3xl flex flex-col justify-between border border-indigo-500/20 hover:border-indigo-500/40 transition-all duration-300 shadow-xl group">
                     <div>
                         <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-indigo-500/20 flex items-center justify-center mb-4 sm:mb-5 text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                            <i data-lucide="key-round" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                            <i data-lucide="crown" class="w-5 h-5 sm:w-6 sm:h-6"></i>
                         </div>
-                        <h3 class="text-lg sm:text-xl font-bold text-white mb-1.5 sm:mb-2">Create Stream Room</h3>
+                        <h3 class="text-lg sm:text-xl font-bold text-white mb-1.5 sm:mb-2">Host Room Stream</h3>
                         <p class="text-slate-400 text-xs sm:text-sm mb-5 sm:mb-6 leading-normal">
-                            Auto-generate a 4-digit pairing code. Share it with your peer to join instantly.
+                            Auto-generate a 4-digit room code as Host. Your video will be pinned at the bottom-left corner for up to 50 viewers.
                         </p>
                     </div>
 
                     <button onclick="createNewStreamRoom()" class="w-full py-3 sm:py-3.5 px-4 rounded-xl bg-gradient-to-r from-brand-600 to-purple-600 hover:from-brand-500 hover:to-purple-500 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2 transition-all active:scale-95">
                         <i data-lucide="zap" class="w-4 h-4"></i>
-                        <span>Generate 4-Digit Code</span>
+                        <span>Host Room (4-Digit Code)</span>
                     </button>
                 </div>
 
-                <!-- Card 2: Join Existing Stream Room -->
+                <!-- Participant Join Room -->
                 <div class="glass-panel p-5 sm:p-8 rounded-2xl sm:rounded-3xl flex flex-col justify-between border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 shadow-xl group">
                     <div>
                         <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-purple-500/20 flex items-center justify-center mb-4 sm:mb-5 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-all">
-                            <i data-lucide="arrow-right-left" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                            <i data-lucide="log-in" class="w-5 h-5 sm:w-6 sm:h-6"></i>
                         </div>
-                        <h3 class="text-lg sm:text-xl font-bold text-white mb-1.5 sm:mb-2">Join Stream Session</h3>
+                        <h3 class="text-lg sm:text-xl font-bold text-white mb-1.5 sm:mb-2">Join Stream Room</h3>
                         <p class="text-slate-400 text-xs sm:text-sm mb-3.5 sm:mb-4 leading-normal">
-                            Enter the 4-digit PIN code provided by your peer to enter their live video stream.
+                            Enter the 4-digit room PIN code to join an active group stream session.
                         </p>
 
-                        <!-- 4-Digit Input Slots -->
                         <div class="mb-5">
-                            <label class="block text-xs text-slate-400 mb-2 font-medium">Enter 4-Digit PIN Code:</label>
+                            <label class="block text-xs text-slate-400 mb-2 font-medium">Enter 4-Digit Code:</label>
                             <div class="flex justify-center gap-2 sm:gap-3" id="digitInputsContainer">
                                 <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="0" class="digit-slot w-12 h-14 sm:w-14 sm:h-14 text-center text-xl sm:text-2xl font-bold font-mono text-white bg-slate-900/90 border border-slate-700 rounded-xl focus:outline-none" />
                                 <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="1" class="digit-slot w-12 h-14 sm:w-14 sm:h-14 text-center text-xl sm:text-2xl font-bold font-mono text-white bg-slate-900/90 border border-slate-700 rounded-xl focus:outline-none" />
@@ -239,139 +218,103 @@
                     </div>
 
                     <button onclick="joinStreamFromInputs()" class="w-full py-3 sm:py-3.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all active:scale-95">
-                        <i data-lucide="log-in" class="w-4 h-4"></i>
-                        <span>Connect to Room</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        <span>Connect to Stream</span>
                     </button>
                 </div>
 
             </div>
-
-            <!-- Features Bar -->
-            <div class="mt-8 sm:mt-12 flex flex-wrap justify-center items-center gap-4 sm:gap-10 text-xs text-slate-400 font-medium px-2">
-                <div class="flex items-center gap-1.5">
-                    <i data-lucide="video" class="w-4 h-4 text-indigo-400"></i> HD Video Chat
-                </div>
-                <div class="flex items-center gap-1.5">
-                    <i data-lucide="monitor" class="w-4 h-4 text-purple-400"></i> Screen Sharing
-                </div>
-                <div class="flex items-center gap-1.5">
-                    <i data-lucide="message-square" class="w-4 h-4 text-pink-400"></i> Instant Text Chat
-                </div>
-                <div class="flex items-center gap-1.5">
-                    <i data-lucide="smile" class="w-4 h-4 text-amber-400"></i> Live Reaction Emojis
-                </div>
-            </div>
-
         </section>
 
         <!-- LIVE STREAM ROOM VIEW (Active Call & Canvas) -->
         <section id="streamRoomScreen" class="hidden w-full flex-1 flex flex-col lg:flex-row gap-3 sm:gap-4 h-[calc(100dvh-5rem)] min-h-[500px]">
             
-            <!-- Left Side: Main Video Layout & Controls -->
+            <!-- Left Side Video Stage -->
             <div class="flex-1 flex flex-col glass-panel rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 relative shadow-2xl h-full">
                 
-                <!-- Floating Reaction Elements Overlay Container -->
                 <div id="emojiOverlay" class="absolute inset-0 pointer-events-none z-30 overflow-hidden"></div>
 
-                <!-- Live Notification Toast inside Call -->
-                <div id="roomNotification" class="absolute top-3 left-1/2 -translate-x-1/2 z-30 bg-slate-900/90 border border-brand-500/40 text-brand-200 px-3.5 py-1.5 rounded-full text-xs font-medium backdrop-blur-md shadow-2xl flex items-center gap-1.5 transition-all opacity-0 pointer-events-none w-max max-w-[90%] truncate">
+                <!-- Toast Notifications -->
+                <div id="roomNotification" class="absolute top-3 left-1/2 -translate-x-1/2 z-30 bg-slate-900/90 border border-brand-500/40 text-brand-200 px-3.5 py-1.5 rounded-full text-xs font-medium backdrop-blur-md shadow-2xl flex items-center gap-1.5 transition-all opacity-0 pointer-events-none max-w-[90%] truncate">
                     <i data-lucide="info" class="w-3.5 h-3.5 text-brand-400 flex-shrink-0"></i>
                     <span id="notificationMessage" class="truncate">Room ready</span>
                 </div>
 
-                <!-- Video Screens Grid / Main View -->
-                <div id="videoContainer" class="flex-1 relative bg-slate-950/90 p-2 sm:p-4 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 items-center justify-center overflow-hidden">
+                <!-- Main Video Stage Canvas -->
+                <div id="videoStage" class="flex-1 relative bg-slate-950/90 p-2 sm:p-4 overflow-hidden flex flex-col justify-between">
                     
-                    <!-- PEER 1 (LOCAL USER VIDEO) -->
-                    <div id="localVideoCard" class="relative w-full h-full min-h-[180px] rounded-xl sm:rounded-2xl overflow-hidden bg-slate-900/90 border border-white/10 flex items-center justify-center shadow-lg">
-                        <video id="localVideo" autoplay playsinline muted class="w-full h-full object-cover mirror-video"></video>
-                        
-                        <!-- Video Off Placeholder Avatar -->
-                        <div id="localAvatar" class="hidden flex-col items-center gap-2">
-                            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white text-xl sm:text-2xl font-bold shadow-xl">
-                                You
-                            </div>
-                            <span class="text-xs text-slate-400 font-medium">Camera Off</span>
-                        </div>
-
-                        <!-- Video Label Overlay -->
-                        <div class="absolute bottom-2.5 left-2.5 bg-slate-900/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 flex items-center gap-1.5 text-[11px] font-semibold text-white">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                            <span>You (Peer 1)</span>
-                            <span id="localAudioIndicator" class="text-slate-400 ml-1"><i data-lucide="mic" class="w-3 h-3"></i></span>
-                        </div>
-                    </div>
-
-                    <!-- PEER 2 (REMOTE USER VIDEO / WAITING STATE) -->
-                    <div id="remoteVideoCard" class="relative w-full h-full min-h-[180px] rounded-xl sm:rounded-2xl overflow-hidden bg-slate-900/90 border border-white/10 flex items-center justify-center shadow-lg">
-                        <video id="remoteVideo" autoplay playsinline class="w-full h-full object-cover"></video>
-                        
-                        <!-- Waiting for Peer Placeholder Card -->
-                        <div id="waitingPlaceholder" class="flex flex-col items-center justify-center p-4 text-center">
+                    <!-- GALLERY AREA (Joined Remote Participants 1 to 50) -->
+                    <div id="remoteParticipantsGrid" class="w-full flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 overflow-y-auto p-1 max-h-[calc(100%-140px)] sm:max-h-[calc(100%-170px)]">
+                        <!-- Waiting Banner if no participants joined yet -->
+                        <div id="emptyGridPlaceholder" class="col-span-full h-full flex flex-col items-center justify-center p-6 text-center my-auto">
                             <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center mb-3 text-brand-400 animate-bounce">
-                                <i data-lucide="user-plus" class="w-7 h-7"></i>
+                                <i data-lucide="users" class="w-7 h-7"></i>
                             </div>
-                            <h4 class="text-base sm:text-lg font-bold text-white mb-1">Waiting for Peer 2...</h4>
-                            <p class="text-xs text-slate-400 max-w-xs mb-3">
-                                Share 4-Digit Code <span id="displayWaitCode" class="font-mono text-purple-300 font-bold bg-white/10 px-1.5 py-0.5 rounded">----</span> with your peer to start.
+                            <h4 class="text-base sm:text-lg font-bold text-white mb-1">Waiting for participants to join...</h4>
+                            <p class="text-xs text-slate-400 max-w-sm mb-3">
+                                Share code <span id="displayWaitCode" class="font-mono text-purple-300 font-bold bg-white/10 px-1.5 py-0.5 rounded">----</span> with up to 50 people to join live.
                             </p>
                             <button onclick="copyRoomCode()" class="text-xs font-semibold px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white rounded-lg transition-colors flex items-center gap-1.5 shadow-md">
                                 <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                                <span>Copy 4-Digit Code</span>
+                                <span>Copy Code</span>
                             </button>
                         </div>
+                    </div>
 
-                        <!-- Video Label Overlay Remote -->
-                        <div id="remoteLabel" class="hidden absolute bottom-2.5 left-2.5 bg-slate-900/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 flex items-center gap-1.5 text-[11px] font-semibold text-white">
-                            <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
-                            <span id="remoteUserName">Peer 2</span>
-                            <span id="remoteAudioIndicator" class="text-slate-400 ml-1"><i data-lucide="mic" class="w-3 h-3"></i></span>
+                    <!-- HOST PINNED PANEL (ALWAYS FIXED AT BOTTOM-LEFT CORNER) -->
+                    <div id="hostPinnedContainer" class="absolute bottom-3 left-3 z-20 w-36 h-28 sm:w-56 sm:h-40 rounded-xl sm:rounded-2xl overflow-hidden bg-slate-900 border-2 border-indigo-500/60 shadow-2xl flex items-center justify-center group transition-all">
+                        <video id="hostVideo" autoplay playsinline muted class="w-full h-full object-cover mirror-video"></video>
+                        
+                        <div id="hostAvatar" class="hidden flex-col items-center gap-1">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white text-sm font-bold">
+                                Host
+                            </div>
+                            <span class="text-[10px] text-slate-400">Camera Off</span>
+                        </div>
+
+                        <!-- Host Fixed Badge -->
+                        <div class="absolute bottom-1.5 left-1.5 bg-slate-900/90 backdrop-blur-md px-2 py-0.5 rounded-md border border-indigo-500/40 flex items-center gap-1 text-[10px] font-bold text-indigo-300">
+                            <i data-lucide="crown" class="w-3 h-3 text-amber-400"></i>
+                            <span>HOST</span>
+                            <span id="hostAudioIndicator" class="text-slate-400 ml-0.5"><i data-lucide="mic" class="w-2.5 h-2.5"></i></span>
                         </div>
                     </div>
 
                 </div>
 
-                <!-- Bottom Action Controls Toolbar (Optimized for Mobile Touch) -->
+                <!-- Bottom Action Controls Toolbar -->
                 <div class="p-2.5 sm:p-4 bg-slate-900/95 backdrop-blur-md border-t border-white/10 flex items-center justify-between gap-1.5 overflow-x-auto">
                     
-                    <!-- Audio/Video Toggles Group -->
                     <div class="flex items-center gap-1.5 sm:gap-2">
-                        <!-- Mute / Unmute Mic -->
                         <button id="btnToggleMic" onclick="toggleAudio()" class="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 transition-all active:scale-95 flex items-center justify-center">
                             <i data-lucide="mic" class="w-4 h-4 sm:w-5 sm:h-5"></i>
                         </button>
 
-                        <!-- Toggle Video Camera -->
                         <button id="btnToggleCam" onclick="toggleVideo()" class="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 transition-all active:scale-95 flex items-center justify-center">
                             <i data-lucide="video" class="w-4 h-4 sm:w-5 sm:h-5"></i>
                         </button>
 
-                        <!-- Screen Share Toggle -->
                         <button id="btnScreenShare" onclick="toggleScreenShare()" class="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 transition-all active:scale-95 flex items-center justify-center">
                             <i data-lucide="monitor" class="w-4 h-4 sm:w-5 sm:h-5"></i>
                         </button>
                     </div>
 
-                    <!-- Quick Reactions Bar -->
+                    <!-- Quick Emoji Reactions Bar -->
                     <div class="flex items-center gap-1 sm:gap-2 px-1.5 py-1 bg-slate-950/80 rounded-xl sm:rounded-2xl border border-white/10">
-                        <button onclick="sendReaction('❤️')" class="p-1.5 hover:bg-white/10 rounded-lg text-base sm:text-lg transition-transform hover:scale-125 active:scale-90">❤️</button>
-                        <button onclick="sendReaction('🔥')" class="p-1.5 hover:bg-white/10 rounded-lg text-base sm:text-lg transition-transform hover:scale-125 active:scale-90">🔥</button>
-                        <button onclick="sendReaction('👏')" class="p-1.5 hover:bg-white/10 rounded-lg text-base sm:text-lg transition-transform hover:scale-125 active:scale-90">👏</button>
-                        <button onclick="sendReaction('🎉')" class="p-1.5 hover:bg-white/10 rounded-lg text-base sm:text-lg transition-transform hover:scale-125 active:scale-90">🎉</button>
+                        <button onclick="sendReaction('❤️')" class="p-1.5 hover:bg-white/10 rounded-lg text-base sm:text-lg transition-transform hover:scale-125">❤️</button>
+                        <button onclick="sendReaction('🔥')" class="p-1.5 hover:bg-white/10 rounded-lg text-base sm:text-lg transition-transform hover:scale-125">🔥</button>
+                        <button onclick="sendReaction('👏')" class="p-1.5 hover:bg-white/10 rounded-lg text-base sm:text-lg transition-transform hover:scale-125">👏</button>
+                        <button onclick="sendReaction('🎉')" class="p-1.5 hover:bg-white/10 rounded-lg text-base sm:text-lg transition-transform hover:scale-125">🎉</button>
                     </div>
 
-                    <!-- Call Actions Group -->
                     <div class="flex items-center gap-1.5 sm:gap-2">
-                        <!-- Toggle Chat Panel -->
                         <button id="btnToggleChat" onclick="toggleChatPanel()" class="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 transition-all relative flex items-center justify-center">
                             <i data-lucide="message-square" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-                            <span id="chatBadge" class="hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-brand-500 rounded-full border-2 border-slate-900"></span>
                         </button>
 
-                        <!-- End Call Button -->
                         <button onclick="leaveRoomSession()" class="px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-semibold transition-all active:scale-95 flex items-center gap-1.5 shadow-lg shadow-rose-600/30">
                             <i data-lucide="phone-off" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-                            <span class="hidden sm:inline text-xs">End</span>
+                            <span class="hidden sm:inline text-xs">End Stream</span>
                         </button>
                     </div>
 
@@ -379,32 +322,25 @@
 
             </div>
 
-            <!-- Right Side / Drawer: Interactive Text Chat Sidebar (Responsive Mobile Drawer) -->
+            <!-- Chat Drawer Sidebar -->
             <div id="chatSidebar" class="hidden lg:flex fixed lg:relative inset-x-2 bottom-16 lg:bottom-0 top-16 lg:top-0 z-40 lg:z-auto lg:w-80 glass-panel rounded-2xl lg:rounded-3xl flex-col border border-white/10 overflow-hidden shadow-2xl transition-all">
                 
-                <!-- Chat Header -->
                 <div class="p-3 px-4 bg-slate-900/90 border-b border-white/10 flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <i data-lucide="message-circle" class="w-4 h-4 text-purple-400"></i>
-                        <h3 class="text-xs sm:text-sm font-bold text-white">Live Session Chat</h3>
+                        <h3 class="text-xs sm:text-sm font-bold text-white">Stream Group Chat</h3>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-[9px] sm:text-[10px] bg-emerald-500/20 text-emerald-300 font-semibold px-2 py-0.5 rounded-full border border-emerald-500/30">P2P Encrypted</span>
-                        <button onclick="toggleChatPanel()" class="lg:hidden p-1 text-slate-400 hover:text-white">
-                            <i data-lucide="x" class="w-4 h-4"></i>
-                        </button>
-                    </div>
+                    <button onclick="toggleChatPanel()" class="lg:hidden p-1 text-slate-400 hover:text-white">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
                 </div>
 
-                <!-- Chat Messages Feed -->
                 <div id="chatMessages" class="flex-1 p-3.5 overflow-y-auto space-y-2.5 text-xs">
-                    <!-- System Welcome Message -->
                     <div class="bg-slate-800/60 p-2.5 rounded-xl border border-white/5 text-slate-400 text-center text-[11px] leading-relaxed">
-                        ✨ Connected to LisoStream Room! You can chat and send reactions live with your peer.
+                        ✨ Connected! Up to 50 people can chat live using code <span id="chatDisplayCode" class="font-mono text-purple-300">----</span>.
                     </div>
                 </div>
 
-                <!-- Chat Input Form -->
                 <form onsubmit="handleSendChatMessage(event)" class="p-2.5 bg-slate-900/95 border-t border-white/10 flex items-center gap-2">
                     <input type="text" id="chatInput" placeholder="Type a message..." class="flex-1 bg-slate-950 text-white text-xs rounded-xl px-3 py-2.5 border border-slate-800 focus:border-brand-500 focus:outline-none placeholder-slate-500" autocomplete="off" />
                     <button type="submit" class="p-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl transition-all active:scale-95 shadow-md flex items-center justify-center">
@@ -418,7 +354,7 @@
 
     </main>
 
-    <!-- Info & Help Modal -->
+    <!-- Info Modal -->
     <div id="infoModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
         <div class="glass-panel w-full max-w-sm sm:max-w-md rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-white/10 shadow-2xl relative">
             <button onclick="hideInfoModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1">
@@ -429,71 +365,63 @@
                     <i data-lucide="video" class="w-5 h-5"></i>
                 </div>
                 <div>
-                    <h3 class="text-base sm:text-lg font-bold text-white">About LisoStream</h3>
-                    <p class="text-xs text-slate-400">P2P Live Streaming Platform</p>
+                    <h3 class="text-base sm:text-lg font-bold text-white">LisoStream Group Stream</h3>
+                    <p class="text-xs text-slate-400">Max 50 Participants</p>
                 </div>
             </div>
 
             <div class="space-y-3 text-xs text-slate-300 leading-relaxed mb-6">
-                <p><strong>1. 4-Digit Room Codes:</strong> Click <em>"Generate 4-Digit Code"</em> to get a fast 4-digit PIN code (e.g., 4829).</p>
-                <p><strong>2. Peer Connection:</strong> Share the code with Peer 2, who enters it into their 4 slots on mobile or computer to join.</p>
-                <p><strong>3. WebRTC & Simulation:</strong> Establishes direct WebRTC connections. Includes a <em>"Simulate Peer"</em> feature for instant testing.</p>
+                <p><strong>1. Host Position:</strong> The stream host video stream is automatically pinned to the <strong>bottom-left corner</strong> of the screen.</p>
+                <p><strong>2. Group Stream Code:</strong> Up to 50 people can join using the exact same 4-digit code.</p>
+                <p><strong>3. Simulation Test:</strong> Tap <em>"Simulate Group Join"</em> to generate simulated participants joining the room.</p>
             </div>
 
             <button onclick="hideInfoModal()" class="w-full py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-semibold shadow-lg">
-                Got it, let's stream
+                Got it
             </button>
         </div>
     </div>
 
     <script>
         /*
-         * LisoStream Application Logic
-         * Features 4-Digit Code PIN, Mobile Responsive Layouts, WebRTC Peer Connection,
-         * Video/Audio Toggles, Demo Simulation & Live Chat.
+         * LisoStream Core Script - Multi-Peer Up to 50 Participants Architecture
          */
 
-        // State Variables
+        const MAX_PARTICIPANTS = 50;
         let currentRoomCode = '';
+        let isHost = false;
         let peer = null;
-        let peerConn = null;
-        let mediaCall = null;
+        let activePeerConnections = {};
+        let activeMediaCalls = {};
         let localStream = null;
         let isAudioMuted = false;
         let isVideoOff = false;
         let isScreenSharing = false;
-        let isSimulationActive = false;
         let simulationInterval = null;
+        let simulatedPeerCount = 0;
 
-        // Initialize Lucide Icons on load
         window.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             setupDigitInputListeners();
         });
 
-        // Generate Random 4-Digit Numeric Room Code (1000 - 9999)
         function generate4DigitCode() {
             return Math.floor(1000 + Math.random() * 9000).toString();
         }
 
-        // Setup Auto-Tab logic for 4-Digit Input Slots
         function setupDigitInputListeners() {
             const inputs = document.querySelectorAll('.digit-slot');
             inputs.forEach((input, index) => {
                 input.addEventListener('input', (e) => {
-                    const val = e.target.value;
-                    if (val.length === 1 && index < inputs.length - 1) {
+                    if (e.target.value.length === 1 && index < inputs.length - 1) {
                         inputs[index + 1].focus();
                     }
                 });
-
                 input.addEventListener('keydown', (e) => {
                     if (e.key === 'Backspace' && !e.target.value && index > 0) {
                         inputs[index - 1].focus();
                     }
                 });
-
-                // Support pasting complete 4-digit code into input slots
                 input.addEventListener('paste', (e) => {
                     e.preventDefault();
                     const pastedData = (e.clipboardData || window.clipboardData).getData('text').trim();
@@ -507,52 +435,45 @@
             });
         }
 
-        // Get Code value from digits inputs
         function getEnteredRoomCode() {
-            const inputs = document.querySelectorAll('.digit-slot');
             let code = '';
-            inputs.forEach(i => code += i.value.trim());
+            document.querySelectorAll('.digit-slot').forEach(i => code += i.value.trim());
             return code;
         }
 
-        // Create Stream Room with Auto-generated 4-Digit Code
         async function createNewStreamRoom() {
+            isHost = true;
             currentRoomCode = generate4DigitCode();
             await initializeLocalMedia();
-            setupPeerConnection(currentRoomCode, true);
+            setupHostPeerNetwork(currentRoomCode);
             switchToRoomView();
-            showNotification(`Room ${currentRoomCode} Created! Waiting for peer...`);
+            showNotification(`Host Room ${currentRoomCode} Created!`);
         }
 
-        // Join Stream Session with Entered 4-Digit Code
         async function joinStreamFromInputs() {
+            isHost = false;
             const code = getEnteredRoomCode();
             if (code.length < 4) {
-                alert('Please enter a full 4-digit PIN code.');
+                alert('Please enter a valid 4-digit room PIN code.');
                 return;
             }
             currentRoomCode = code;
             await initializeLocalMedia();
-            setupPeerConnection(currentRoomCode, false);
+            setupParticipantPeerNetwork(currentRoomCode);
             switchToRoomView();
-            showNotification(`Connecting to Room ${currentRoomCode}...`);
+            showNotification(`Joining Room ${currentRoomCode}...`);
         }
 
-        // Initialize Local WebRTC Audio/Video Stream
         async function initializeLocalMedia() {
             try {
                 localStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: true });
-                const localVideo = document.getElementById('localVideo');
-                localVideo.srcObject = localStream;
+                document.getElementById('hostVideo').srcObject = localStream;
             } catch (err) {
-                console.warn('Could not access camera/mic. Using demo canvas stream.', err);
                 localStream = createFallbackCanvasStream();
-                const localVideo = document.getElementById('localVideo');
-                localVideo.srcObject = localStream;
+                document.getElementById('hostVideo').srcObject = localStream;
             }
         }
 
-        // Fallback Stream Generator if webcam is unavailable
         function createFallbackCanvasStream() {
             const canvas = document.createElement('canvas');
             canvas.width = 640;
@@ -563,32 +484,28 @@
             function draw() {
                 ctx.fillStyle = '#0f172a';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
                 angle += 0.05;
-                const x = canvas.width / 2 + Math.cos(angle) * 40;
-                const y = canvas.height / 2 + Math.sin(angle) * 20;
+                const x = canvas.width / 2 + Math.cos(angle) * 30;
+                const y = canvas.height / 2 + Math.sin(angle) * 15;
 
                 const grad = ctx.createRadialGradient(x, y, 10, canvas.width/2, canvas.height/2, 200);
                 grad.addColorStop(0, '#6366f1');
-                grad.addColorStop(1, '#a855f7');
+                grad.addColorStop(1, '#8b5cf6');
 
                 ctx.fillStyle = grad;
                 ctx.beginPath();
-                ctx.arc(canvas.width/2, canvas.height/2, 90, 0, Math.PI * 2);
+                ctx.arc(canvas.width/2, canvas.height/2, 80, 0, Math.PI * 2);
                 ctx.fill();
 
                 ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 22px sans-serif';
+                ctx.font = 'bold 20px sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText('LisoStream Camera', canvas.width/2, canvas.height/2 + 8);
-                
+                ctx.fillText(isHost ? 'Host Camera' : 'User Camera', canvas.width/2, canvas.height/2 + 6);
                 requestAnimationFrame(draw);
             }
             draw();
 
             const stream = canvas.captureStream(30);
-            
-            // Silent audio track fallback
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = audioCtx.createOscillator();
             const dst = audioCtx.createMediaStreamDestination();
@@ -599,97 +516,132 @@
             return stream;
         }
 
-        // PeerJS Connection Setup
-        function setupPeerConnection(roomCode, isHost) {
-            const peerId = isHost ? `lisostream-${roomCode}-host` : `lisostream-${roomCode}-guest`;
-            
+        function setupHostPeerNetwork(roomCode) {
+            const hostPeerId = `lisostream-${roomCode}-host`;
             if (peer) peer.destroy();
 
-            peer = new Peer(peerId, {
+            peer = new Peer(hostPeerId, {
                 debug: 1,
-                config: {
-                    iceServers: [
-                        { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' }
-                    ]
-                }
-            });
-
-            peer.on('open', (id) => {
-                if (!isHost) {
-                    connectToHost(`lisostream-${roomCode}-host`);
-                }
+                config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] }
             });
 
             peer.on('connection', (conn) => {
-                peerConn = conn;
-                setupDataChannelListeners();
-                updatePeerConnectedUI();
+                const connectedCount = Object.keys(activePeerConnections).length;
+                if (connectedCount >= MAX_PARTICIPANTS - 1) {
+                    conn.send({ type: 'full', message: 'Room is at maximum capacity (50 participants).' });
+                    conn.close();
+                    return;
+                }
+
+                activePeerConnections[conn.peer] = conn;
+                setupDataConnectionListeners(conn);
+                updateParticipantCounterUI();
             });
 
             peer.on('call', (call) => {
-                mediaCall = call;
                 call.answer(localStream);
                 call.on('stream', (remoteStream) => {
-                    attachRemoteStream(remoteStream);
+                    addRemoteParticipantVideo(call.peer, remoteStream);
                 });
+                activeMediaCalls[call.peer] = call;
+            });
+        }
+
+        function setupParticipantPeerNetwork(roomCode) {
+            const myParticipantId = `lisostream-${roomCode}-user-${Math.floor(Math.random() * 8999 + 1000)}`;
+            if (peer) peer.destroy();
+
+            peer = new Peer(myParticipantId, {
+                debug: 1,
+                config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] }
             });
 
-            peer.on('error', (err) => {
-                console.warn('Peer connection info:', err);
-                if (!isSimulationActive && isHost) {
-                    showNotification('Waiting for peer... Tap "Simulate Peer" to test!');
+            peer.on('open', () => {
+                const hostPeerId = `lisostream-${roomCode}-host`;
+                const conn = peer.connect(hostPeerId);
+                activePeerConnections[hostPeerId] = conn;
+                setupDataConnectionListeners(conn);
+
+                if (localStream) {
+                    const call = peer.call(hostPeerId, localStream);
+                    call.on('stream', (hostStream) => {
+                        addRemoteParticipantVideo(hostPeerId, hostStream, true);
+                    });
+                    activeMediaCalls[hostPeerId] = call;
                 }
             });
-        }
 
-        // Connect Guest to Host
-        function connectToHost(hostPeerId) {
-            peerConn = peer.connect(hostPeerId);
-            setupDataChannelListeners();
-
-            if (localStream) {
-                mediaCall = peer.call(hostPeerId, localStream);
-                mediaCall.on('stream', (remoteStream) => {
-                    attachRemoteStream(remoteStream);
+            peer.on('call', (call) => {
+                call.answer(localStream);
+                call.on('stream', (remoteStream) => {
+                    addRemoteParticipantVideo(call.peer, remoteStream);
                 });
-            }
+            });
         }
 
-        // Data Channel Listeners for Live Chat & Reaction Emojis
-        function setupDataChannelListeners() {
-            if (!peerConn) return;
-
-            peerConn.on('open', () => {
-                updatePeerConnectedUI();
-            });
-
-            peerConn.on('data', (data) => {
+        function setupDataConnectionListeners(conn) {
+            conn.on('data', (data) => {
                 if (data.type === 'chat') {
-                    appendChatMessage('Peer 2', data.message, false);
+                    appendChatMessage(data.sender || 'Participant', data.message, false);
                 } else if (data.type === 'reaction') {
                     spawnFloatingEmoji(data.emoji);
+                } else if (data.type === 'full') {
+                    alert(data.message);
+                    resetToLobby();
                 }
             });
 
-            peerConn.on('close', () => {
-                updatePeerDisconnectedUI();
+            conn.on('close', () => {
+                delete activePeerConnections[conn.peer];
+                removeParticipantVideo(conn.peer);
+                updateParticipantCounterUI();
             });
         }
 
-        // Attach Received Remote Stream
-        function attachRemoteStream(stream) {
-            const remoteVideo = document.getElementById('remoteVideo');
-            remoteVideo.srcObject = stream;
-            document.getElementById('waitingPlaceholder').classList.add('hidden');
-            document.getElementById('remoteLabel').classList.remove('hidden');
-            document.getElementById('remoteLabel').classList.add('flex');
+        function addRemoteParticipantVideo(peerId, stream, isHostStream = false) {
+            document.getElementById('emptyGridPlaceholder')?.classList.add('hidden');
             
-            updatePeerConnectedUI();
+            if (document.getElementById(`video-card-${peerId}`)) return;
+
+            const grid = document.getElementById('remoteParticipantsGrid');
+            const card = document.createElement('div');
+            card.id = `video-card-${peerId}`;
+            card.className = 'relative w-full h-32 sm:h-40 rounded-xl overflow-hidden bg-slate-900 border border-white/10 flex items-center justify-center shadow-md';
+
+            card.innerHTML = `
+                <video id="video-${peerId}" autoplay playsinline class="w-full h-full object-cover"></video>
+                <div class="absolute bottom-1.5 left-1.5 bg-slate-900/80 backdrop-blur-md px-2 py-0.5 rounded border border-white/10 flex items-center gap-1 text-[10px] text-white">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    <span>${isHostStream ? 'Host' : 'Participant'}</span>
+                </div>
+            `;
+
+            grid.appendChild(card);
+            const videoEl = card.querySelector('video');
+            videoEl.srcObject = stream;
+
+            updateParticipantCounterUI();
             triggerConfetti();
         }
 
-        // UI Navigation & View Switch
+        function removeParticipantVideo(peerId) {
+            const card = document.getElementById(`video-card-${peerId}`);
+            if (card) card.remove();
+
+            const grid = document.getElementById('remoteParticipantsGrid');
+            if (grid.children.length <= 1) {
+                document.getElementById('emptyGridPlaceholder')?.classList.remove('hidden');
+            }
+        }
+
+        function updateParticipantCounterUI() {
+            const count = Object.keys(activePeerConnections).length + 1 + simulatedPeerCount;
+            const badge = document.getElementById('participantCount');
+            if (badge) {
+                badge.innerText = `${count} / ${MAX_PARTICIPANTS} Connected`;
+            }
+        }
+
         function switchToRoomView() {
             document.getElementById('lobbyScreen').classList.add('hidden');
             document.getElementById('streamRoomScreen').classList.remove('hidden');
@@ -698,131 +650,92 @@
             
             document.getElementById('navRoomCode').innerText = currentRoomCode;
             document.getElementById('displayWaitCode').innerText = currentRoomCode;
+            document.getElementById('chatDisplayCode').innerText = currentRoomCode;
+            updateParticipantCounterUI();
         }
 
         function resetToLobby() {
             if (peer) peer.destroy();
-            if (localStream) {
-                localStream.getTracks().forEach(track => track.stop());
-            }
+            if (localStream) localStream.getTracks().forEach(t => t.stop());
             if (simulationInterval) clearInterval(simulationInterval);
 
-            isSimulationActive = false;
+            simulatedPeerCount = 0;
+            activePeerConnections = {};
+            activeMediaCalls = {};
+
             document.getElementById('streamRoomScreen').classList.add('hidden');
             document.getElementById('navRoomBadge').classList.add('hidden');
             document.getElementById('demoToggleBtn').classList.add('hidden');
             document.getElementById('lobbyScreen').classList.remove('hidden');
             
             document.querySelectorAll('.digit-slot').forEach(i => i.value = '');
-            updatePeerDisconnectedUI();
+            document.getElementById('remoteParticipantsGrid').innerHTML = `
+                <div id="emptyGridPlaceholder" class="col-span-full h-full flex flex-col items-center justify-center p-6 text-center my-auto">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center mb-3 text-brand-400 animate-bounce">
+                        <i data-lucide="users" class="w-7 h-7"></i>
+                    </div>
+                    <h4 class="text-base sm:text-lg font-bold text-white mb-1">Waiting for participants...</h4>
+                </div>
+            `;
+            lucide.createIcons();
         }
 
-        function updatePeerConnectedUI() {
-            const dot = document.getElementById('statusDot');
-            const text = document.getElementById('statusText');
-            
-            dot.className = "w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-400";
-            text.innerText = "Peer 2 Active";
-            text.className = "text-[11px] sm:text-xs font-medium text-emerald-300";
-
-            showNotification('Peer 2 joined stream!');
-        }
-
-        function updatePeerDisconnectedUI() {
-            const dot = document.getElementById('statusDot');
-            const text = document.getElementById('statusText');
-            
-            dot.className = "w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-amber-400 animate-ping";
-            text.innerText = "Waiting...";
-            text.className = "text-[11px] sm:text-xs font-medium text-amber-300";
-            
-            document.getElementById('waitingPlaceholder').classList.remove('hidden');
-            document.getElementById('remoteLabel').classList.add('hidden');
-            document.getElementById('remoteLabel').classList.remove('flex');
-        }
-
-        // SIMULATION DEMO MODE TOGGLE
+        // SIMULATION DEMO FOR MULTI-USER JOIN (UP TO 50)
         function toggleModeSimulation() {
-            isSimulationActive = !isSimulationActive;
-            const btnText = document.getElementById('demoToggleText');
-
-            if (isSimulationActive) {
-                btnText.innerText = "Stop Simulation";
-                showNotification("Simulation Mode Active!");
-
-                const simStream = createFallbackCanvasStream();
-                attachRemoteStream(simStream);
-
-                const messages = ["Hello from mobile!", "LisoStream is running smooth 🔥", "Can you hear me fine?", "Awesome 4-digit setup! 👏"];
-                const emojis = ["❤️", "🔥", "🎉", "😂", "👏"];
-
-                simulationInterval = setInterval(() => {
-                    if (Math.random() > 0.4) {
-                        const randomMsg = messages[Math.floor(Math.random() * messages.length)];
-                        appendChatMessage("Simulated Peer 2", randomMsg, false);
+            if (simulatedPeerCount === 0) {
+                showNotification("Simulating group participants joining...");
+                
+                const interval = setInterval(() => {
+                    if (simulatedPeerCount < 12) {
+                        simulatedPeerCount++;
+                        const fakeId = `sim-user-${simulatedPeerCount}`;
+                        const simStream = createFallbackCanvasStream();
+                        addRemoteParticipantVideo(fakeId, simStream, false);
                     } else {
-                        const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-                        spawnFloatingEmoji(randomEmoji);
+                        clearInterval(interval);
                     }
-                }, 5500);
+                }, 800);
+
+                const messages = ["Great quality!", "Joining from phone!", "Hello everyone 👋", "Nice layout host!"];
+                simulationInterval = setInterval(() => {
+                    const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+                    appendChatMessage(`User #${Math.floor(Math.random() * simulatedPeerCount + 1)}`, randomMsg, false);
+                }, 4000);
 
             } else {
-                btnText.innerText = "Simulate Peer";
                 if (simulationInterval) clearInterval(simulationInterval);
-                updatePeerDisconnectedUI();
-                showNotification("Simulation Stopped.");
+                simulatedPeerCount = 0;
+                document.getElementById('remoteParticipantsGrid').innerHTML = '';
+                document.getElementById('emptyGridPlaceholder')?.classList.remove('hidden');
+                updateParticipantCounterUI();
+                showNotification("Simulation reset.");
             }
         }
 
-        // Media Controls
         function toggleAudio() {
             if (!localStream) return;
-            const audioTrack = localStream.getAudioTracks()[0];
-            if (audioTrack) {
+            const track = localStream.getAudioTracks()[0];
+            if (track) {
                 isAudioMuted = !isAudioMuted;
-                audioTrack.enabled = !isAudioMuted;
-                
+                track.enabled = !isAudioMuted;
                 const btn = document.getElementById('btnToggleMic');
-                const indicator = document.getElementById('localAudioIndicator');
-
-                if (isAudioMuted) {
-                    btn.classList.replace('bg-slate-800', 'bg-rose-600');
-                    btn.innerHTML = `<i data-lucide="mic-off" class="w-4 h-4 sm:w-5 sm:h-5 text-white"></i>`;
-                    indicator.innerHTML = `<i data-lucide="mic-off" class="w-3 h-3 text-rose-400"></i>`;
-                } else {
-                    btn.classList.replace('bg-rose-600', 'bg-slate-800');
-                    btn.innerHTML = `<i data-lucide="mic" class="w-4 h-4 sm:w-5 sm:h-5 text-slate-200"></i>`;
-                    indicator.innerHTML = `<i data-lucide="mic" class="w-3 h-3 text-slate-400"></i>`;
-                }
-                lucide.createIcons();
+                btn.classList.toggle('bg-rose-600', isAudioMuted);
+                btn.classList.toggle('bg-slate-800', !isAudioMuted);
             }
         }
 
         function toggleVideo() {
             if (!localStream) return;
-            const videoTrack = localStream.getVideoTracks()[0];
-            if (videoTrack) {
+            const track = localStream.getVideoTracks()[0];
+            if (track) {
                 isVideoOff = !isVideoOff;
-                videoTrack.enabled = !isVideoOff;
-
+                track.enabled = !isVideoOff;
+                document.getElementById('hostVideo').classList.toggle('hidden', isVideoOff);
+                document.getElementById('hostAvatar').classList.toggle('hidden', !isVideoOff);
+                document.getElementById('hostAvatar').classList.toggle('flex', isVideoOff);
                 const btn = document.getElementById('btnToggleCam');
-                const videoEl = document.getElementById('localVideo');
-                const avatar = document.getElementById('localAvatar');
-
-                if (isVideoOff) {
-                    btn.classList.replace('bg-slate-800', 'bg-rose-600');
-                    btn.innerHTML = `<i data-lucide="video-off" class="w-4 h-4 sm:w-5 sm:h-5 text-white"></i>`;
-                    videoEl.classList.add('hidden');
-                    avatar.classList.remove('hidden');
-                    avatar.classList.add('flex');
-                } else {
-                    btn.classList.replace('bg-rose-600', 'bg-slate-800');
-                    btn.innerHTML = `<i data-lucide="video" class="w-4 h-4 sm:w-5 sm:h-5 text-slate-200"></i>`;
-                    videoEl.classList.remove('hidden');
-                    avatar.classList.add('hidden');
-                    avatar.classList.remove('flex');
-                }
-                lucide.createIcons();
+                btn.classList.toggle('bg-rose-600', isVideoOff);
+                btn.classList.toggle('bg-slate-800', !isVideoOff);
             }
         }
 
@@ -830,54 +743,31 @@
             try {
                 if (!isScreenSharing) {
                     const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-                    const screenTrack = screenStream.getVideoTracks()[0];
-
-                    if (mediaCall && mediaCall.peerConnection) {
-                        const sender = mediaCall.peerConnection.getSenders().find(s => s.track.kind === 'video');
-                        if (sender) sender.replaceTrack(screenTrack);
-                    }
-
-                    document.getElementById('localVideo').srcObject = screenStream;
+                    document.getElementById('hostVideo').srcObject = screenStream;
                     isScreenSharing = true;
                     document.getElementById('btnScreenShare').classList.replace('bg-slate-800', 'bg-brand-600');
-
-                    screenTrack.onended = () => {
-                        stopScreenSharing();
-                    };
-                    showNotification('Started sharing screen');
                 } else {
-                    stopScreenSharing();
+                    document.getElementById('hostVideo').srcObject = localStream;
+                    isScreenSharing = false;
+                    document.getElementById('btnScreenShare').classList.replace('bg-brand-600', 'bg-slate-800');
                 }
             } catch (err) {
-                console.warn('Screen share unavailable:', err);
+                console.warn(err);
             }
         }
 
-        function stopScreenSharing() {
-            if (!isScreenSharing) return;
-            const videoTrack = localStream.getVideoTracks()[0];
-            if (mediaCall && mediaCall.peerConnection) {
-                const sender = mediaCall.peerConnection.getSenders().find(s => s.track.kind === 'video');
-                if (sender) sender.replaceTrack(videoTrack);
-            }
-            document.getElementById('localVideo').srcObject = localStream;
-            isScreenSharing = false;
-            document.getElementById('btnScreenShare').classList.replace('bg-brand-600', 'bg-slate-800');
-            showNotification('Stopped sharing screen');
-        }
-
-        // Text Chat Logic
         function handleSendChatMessage(e) {
             e.preventDefault();
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
             if (!message) return;
 
-            appendChatMessage('You', message, true);
+            const senderLabel = isHost ? 'Host' : 'You';
+            appendChatMessage(senderLabel, message, true);
 
-            if (peerConn && peerConn.open) {
-                peerConn.send({ type: 'chat', message: message });
-            }
+            Object.values(activePeerConnections).forEach(conn => {
+                if (conn.open) conn.send({ type: 'chat', sender: senderLabel, message: message });
+            });
 
             input.value = '';
         }
@@ -885,25 +775,22 @@
         function appendChatMessage(sender, text, isSelf) {
             const container = document.getElementById('chatMessages');
             const msgBubble = document.createElement('div');
-            
             msgBubble.className = `flex flex-col ${isSelf ? 'items-end' : 'items-start'} my-1`;
             msgBubble.innerHTML = `
                 <span class="text-[9px] text-slate-400 mb-0.5 font-medium">${sender}</span>
-                <div class="${isSelf ? 'bg-brand-600 text-white rounded-tr-none' : 'bg-slate-800 text-slate-200 rounded-tl-none'} px-3 py-1.5 rounded-xl max-w-[85%] break-words shadow text-xs">
+                <div class="${isSelf ? 'bg-brand-600 text-white rounded-tr-none' : 'bg-slate-800 text-slate-200 rounded-tl-none'} px-3 py-1.5 rounded-xl max-w-[85%] break-words text-xs shadow">
                     ${escapeHTML(text)}
                 </div>
             `;
-
             container.appendChild(msgBubble);
             container.scrollTop = container.scrollHeight;
         }
 
-        // Reaction Emojis Logic
         function sendReaction(emoji) {
             spawnFloatingEmoji(emoji);
-            if (peerConn && peerConn.open) {
-                peerConn.send({ type: 'reaction', emoji: emoji });
-            }
+            Object.values(activePeerConnections).forEach(conn => {
+                if (conn.open) conn.send({ type: 'reaction', emoji: emoji });
+            });
         }
 
         function spawnFloatingEmoji(emoji) {
@@ -911,80 +798,54 @@
             const el = document.createElement('div');
             el.className = 'floating-emoji';
             el.innerText = emoji;
-            
-            const randomX = Math.floor(Math.random() * 60) + 20;
-            el.style.left = `${randomX}%`;
+            el.style.left = `${Math.floor(Math.random() * 60) + 20}%`;
             el.style.bottom = '20px';
-
             overlay.appendChild(el);
             setTimeout(() => el.remove(), 2200);
         }
 
-        // Copy Code Helper
         function copyRoomCode() {
             if (!currentRoomCode) return;
-            const tempInput = document.createElement('input');
-            tempInput.value = currentRoomCode;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
-
-            showNotification(`4-Digit PIN ${currentRoomCode} copied!`);
+            navigator.clipboard.writeText(currentRoomCode);
+            showNotification(`Code ${currentRoomCode} copied!`);
         }
 
-        // Notification Toast Helper
         function showNotification(msg) {
             const toast = document.getElementById('roomNotification');
-            const msgEl = document.getElementById('notificationMessage');
-            msgEl.innerText = msg;
-
+            document.getElementById('notificationMessage').innerText = msg;
             toast.classList.remove('opacity-0', 'pointer-events-none');
             toast.classList.add('opacity-100');
-
             setTimeout(() => {
                 toast.classList.remove('opacity-100');
                 toast.classList.add('opacity-0', 'pointer-events-none');
             }, 3000);
         }
 
-        // Toggle Mobile Chat Panel Overlay Drawer
         function toggleChatPanel() {
             const sidebar = document.getElementById('chatSidebar');
             sidebar.classList.toggle('hidden');
             sidebar.classList.toggle('flex');
         }
 
-        // Confetti Burst Effect
         function triggerConfetti() {
             if (typeof confetti === 'function') {
-                confetti({
-                    particleCount: 40,
-                    spread: 50,
-                    origin: { y: 0.7 }
-                });
+                confetti({ particleCount: 30, spread: 50, origin: { y: 0.7 } });
             }
         }
 
-        // Info Modal Handlers
         function showInfoModal() {
-            const modal = document.getElementById('infoModal');
-            modal.classList.remove('opacity-0', 'pointer-events-none');
+            document.getElementById('infoModal').classList.remove('opacity-0', 'pointer-events-none');
         }
         function hideInfoModal() {
-            const modal = document.getElementById('infoModal');
-            modal.classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('infoModal').classList.add('opacity-0', 'pointer-events-none');
         }
 
-        // Safety HTML Escaping
         function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, 
-                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-            );
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
         }
 
         function leaveRoomSession() {
-            if (confirm("End live stream session?")) {
+            if (confirm("End or leave live stream session?")) {
                 resetToLobby();
             }
         }
